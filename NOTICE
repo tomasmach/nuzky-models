@@ -1,0 +1,18 @@
+nuzky-models
+Copyright 2026 the Nuzky authors
+
+These files are modified versions of MediaPipe models by Google LLC, licensed under the
+Apache License, Version 2.0 (see LICENSE):
+
+- face-landmarks-v2.onnx: MediaPipe Face Mesh V2 (face_landmarks_detector.tflite in
+  face_landmarker.task, float16/1)
+- face-blendshapes-v2.onnx: MediaPipe Blendshape V2 (face_blendshapes.tflite in
+  face_landmarker.task, float16/1)
+- selfie-segmenter.onnx: MediaPipe Selfie Segmenter, general 256x256 model
+  (selfie_segmenter.tflite, float16/1)
+
+Changes made: each TFLite model was converted to ONNX (opset 17) with tf2onnx 1.17.0 by
+convert-mediapipe.py; float16 weights were expanded to float32; in the selfie segmenter
+MediaPipe's custom Convolution2DTransposeBias operation was replaced by a standard ONNX
+ConvTranspose with the same weights and bias; model metadata naming the source and licence
+was added. No weights were retrained or altered.
