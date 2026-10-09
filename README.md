@@ -1,8 +1,9 @@
 # nuzky-models
 
-ONNX conversions of three Apache-2.0 MediaPipe models, for [Nuzky](https://nuzky.app), the video
-editor, which picks cover frames and finds people with them. Nuzky downloads these files from this
-repository at a pinned commit and checks their size and SHA-256 before using them.
+ONNX conversions of three Apache-2.0 MediaPipe models and an export of the MIT BiRefNet_lite, for
+[Nuzky](https://nuzky.app), the video editor, which picks cover frames, finds people and masks the
+subject with them. Nuzky downloads these files at a pinned commit or release and checks their size
+and SHA-256 before using them.
 
 | File | Bytes | SHA-256 | Source |
 |---|---|---|---|
@@ -45,3 +46,20 @@ UV_CACHE_DIR=tmp-test/vision-convert/uv-cache uv run --script scripts/convert-me
   pixels. Output `blendshapes` [52] in MediaPipe's category order.
 - `selfie-segmenter.onnx`: input `image` [1,256,256,3] RGB in 0..1, the whole frame stretched.
   Output `mask` [1,256,256,1], person probability.
+
+## BiRefNet_lite
+
+`birefnet-lite.onnx` is too large for a file in git (188145755 bytes), so it is the asset of the
+release [`birefnet-lite-1`](https://github.com/tomasmach/nuzky-models/releases/tag/birefnet-lite-1),
+SHA-256 `8fd304fd859a8dc999a4a93f1fb58f4c9a6bf575de64d95c2a78027e7964d7be`.
+
+It is [ZhengPeng7/BiRefNet_lite](https://huggingface.co/ZhengPeng7/BiRefNet_lite) at commit
+`aa62cd87eafb9cc43056d08ef3615a14628b831d` (`model.safetensors` SHA-256 `4417d897…ca052d0815`),
+MIT licence (`LICENSE-BiRefNet`), exported by `convert-birefnet.py` with the 20 deformable
+convolutions as native ONNX `DeformConv` nodes (opset 22, which ONNX Runtime 1.28 runs on the CPU).
+The earlier onnx-community export decomposed them into gathers and needed 6-7 GB of memory per frame;
+this one needs about 2 GB and a third of the time. Input `input_image` [1,3,1024,1024] RGB with
+ImageNet mean and std, output `output_image` [1,1,1024,1024] logits. The decoder's image patches are
+stacked in the order the weights were trained with (see the script). It matches PyTorch within 1.7e-4
+in probability on 12 images and noise, and the onnx-community file with IoU 1.0. Two runs give
+byte-identical files.

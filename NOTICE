@@ -16,3 +16,9 @@ convert-mediapipe.py; float16 weights were expanded to float32; in the selfie se
 MediaPipe's custom Convolution2DTransposeBias operation was replaced by a standard ONNX
 ConvTranspose with the same weights and bias; model metadata naming the source and licence
 was added. No weights were retrained or altered.
+
+birefnet-lite.onnx (release asset) is a modified version of BiRefNet_lite by ZhengPeng, licensed
+under the MIT License (see LICENSE-BiRefNet). Changes made: exported from the PyTorch weights to ONNX
+(opset 22) by convert-birefnet.py, with deformable convolutions as native DeformConv nodes and the
+decoder's image patches in the channel order the weights were trained with; metadata naming the
+source and licence was added. No weights were retrained or altered.
